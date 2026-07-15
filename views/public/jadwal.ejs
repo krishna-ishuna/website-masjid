@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .jadwal-hero {
+            background: linear-gradient(135deg, #0d6832 0%, #198754 100%);
+            color: white;
+            padding: 60px 0;
+        }
+
+        .prayer-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-top: 4px solid #198754;
+        }
+
+        .prayer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .prayer-card.active {
+            background: linear-gradient(135deg, #198754 0%, #0d6832 100%);
+            color: white;
+            border-top: 4px solid #ffc107;
+        }
+
+        .prayer-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .prayer-card .time {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .city-selector {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <% include('../partials/navbar') %>
+
+        <% const breadcrumbItems=[{ label: 'Jadwal Sholat' }] %>
+            <% include('../partials/breadcrumb') %>
+
+                <!-- Hero Section -->
+                <section class="jadwal-hero text-center">
+                    <div class="container">
+                        <h1 class="display-5 fw-bold mb-3">
+                            <i class="bi bi-clock-history"></i> Jadwal Sholat Hari Ini
+                        </h1>
+                        <p class="lead mb-0" id="tanggalHijriyah">Memuat tanggal...</p>
+                        <p class="mb-0 mt-2" id="lokasiUser">
+                            <i class="bi bi-geo-alt-fill"></i> Memuat lokasi Anda...
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Selector Kota -->
+                <section class="py-4 bg-light">
+                    <div class="container">
+                        <div class="city-selector">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="mb-1"><i class="bi bi-search"></i> Cari Jadwal Berdasarkan Kota</h5>
+                                    <small class="text-muted">Pilih kota untuk melihat jadwal sholat di wilayah
+                                        tersebut</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="kotaSelect" class="form-select">
+                                        <option value="Jakarta">Jakarta</option>
+                                        <option value="Bandung">Bandung</option>
+                                        <option value="Surabaya">Surabaya</option>
+                                        <option value="Yogyakarta">Yogyakarta</option>
+                                        <option value="Semarang">Semarang</option>
+                                        <option value="Medan">Medan</option>
+                                        <option value="Makassar">Makassar</option>
+                                        <option value="Palembang">Palembang</option>
+                                        <option value="Denpasar">Denpasar</option>
+                                        <option value="Manado">Manado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Loading -->
+                <div class="loading-spinner" id="loading">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Memuat jadwal sholat...</p>
+                </div>
+
+                <!-- Jadwal Sholat Cards -->
+                <section class="py-5">
+                    <div class="container">
+                        <div class="row g-4" id="jadwalContainer">
+                            <!-- Akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Info Tambahan -->
+                <section class="py-5 bg-light">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><i class="bi bi-info-circle text-success"></i> Tentang
+                                            Jadwal
+                                        </h4>
+                                        <p class="card-text">
+                                            Jadwal sholat di atas diambil secara otomatis dari <strong>Aladhan
+                                                API</strong>
+                                            menggunakan metode perhitungan
+                                            <strong>Kemenag RI (Kementerian Agama Republik Indonesia)</strong> yang
+                                            disesuaikan
+                                            dengan wilayah Indonesia.
+                                        </p>
+                                        <p class="card-text text-muted small mb-0">
+                                            <i class="bi bi-exclamation-triangle"></i> Untuk kehati-hatian, disarankan
+                                            menambah
+                                            waktu imsak 10 menit dan mengurangi waktu maghrib 2 menit.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><i class="bi bi-geo-alt text-success"></i> Deteksi Lokasi
+                                        </h4>
+                                        <p class="card-text">
+                                            Website ini akan mencoba mendeteksi lokasi Anda secara otomatis untuk
+                                            menampilkan
+                                            jadwal sholat yang paling akurat.
+                                        </p>
+                                        <button class="btn btn-outline-success" onclick="deteksiLokasi()">
+                                            <i class="bi bi-compass"></i> Gunakan Lokasi Saya Saat Ini
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Back to Top Button -->
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" id="backToTop"
+                    class="btn btn-success btn-lg rounded-circle shadow-lg"
+                    style="position: fixed; bottom: 30px; right: 30px; display: none; z-index: 1000; width: 50px; height: 50px;">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+
+                <script>
+                    // Tampilkan tombol back to top saat scroll
+                    window.addEventListener('scroll', function () {
+                        const backToTop = document.getElementById('backToTop');
+                        if (window.pageYOffset > 300) {
+                            backToTop.style.display = 'block';
+                        } else {
+                            backToTop.style.display = 'none';
+                        }
+                    });
+                </script>
+                <!-- Tombol Kembali -->
+                <section class="py-4">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <a href="/" class="btn btn-outline-success">
+                                <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+                            </a>
+                            <a href="/kontak#donasi" class="btn btn-success">
+                                <i class="bi bi-heart-fill"></i> Donasi Sekarang
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <% include('../partials/footer') %>
+
+                    <!-- JavaScript untuk Fetch API -->
+                    <script>
+                        // Koordinat default kota-kota besar Indonesia
+                        const kotaKoordinat = {
+                            'Jakarta': { lat: -6.2088, lng: 106.8456 },
+                            'Bandung': { lat: -6.9175, lng: 107.6191 },
+                            'Surabaya': { lat: -7.2575, lng: 112.7521 },
+                            'Yogyakarta': { lat: -7.7956, lng: 110.3695 },
+                            'Semarang': { lat: -6.9667, lng: 110.4167 },
+                            'Medan': { lat: 3.5952, lng: 98.6722 },
+                            'Makassar': { lat: -5.1477, lng: 119.4327 },
+                            'Palembang': { lat: -2.9761, lng: 104.7754 },
+                            'Denpasar': { lat: -8.6500, lng: 115.2167 },
+                            'Manado': { lat: 1.4748, lng: 124.8421 }
+                        };
+
+                        const namaWaktuSholat = {
+                            Fajr: { nama: 'Subuh', icon: 'bi-sunrise', warna: '#6f42c1' },
+                            Sunrise: { nama: 'Syuruq', icon: 'bi-sun', warna: '#fd7e14' },
+                            Dhuhr: { nama: 'Dzuhur', icon: 'bi-brightness-high', warna: '#ffc107' },
+                            Asr: { nama: 'Ashar', icon: 'bi-cloud-sun', warna: '#0dcaf0' },
+                            Maghrib: { nama: 'Maghrib', icon: 'bi-sunset', warna: '#dc3545' },
+                            Isha: { nama: 'Isya', icon: 'bi-moon-stars', warna: '#212529' }
+                        };
+
+                        // Fungsi utama untuk mengambil jadwal sholat
+                        async function ambilJadwalSholat(lat, lng, namaLokasi = 'Lokasi Anda') {
+                            const loading = document.getElementById('loading');
+                            const container = document.getElementById('jadwalContainer');
+
+                            loading.style.display = 'block';
+                            container.innerHTML = '';
+
+                            try {
+                                // Format tanggal hari ini (DD-MM-YYYY)
+                                const today = new Date();
+                                const tanggal = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+
+                                // Method 20 = Kemenag RI (Kementerian Agama Republik Indonesia)
+                                const url = `https://api.aladhan.com/v1/timings/${tanggal}?latitude=${lat}&longitude=${lng}&method=20`;
+
+                                const response = await fetch(url);
+                                const data = await response.json();
+
+                                if (data.code === 200) {
+                                    const timings = data.data.timings;
+                                    const hijriDate = data.data.date.hijri;
+
+                                    // Tampilkan tanggal Hijriyah
+                                    document.getElementById('tanggalHijriyah').innerHTML =
+                                        `<strong>${hijriDate.day} ${hijriDate.month.en} ${hijriDate.year} H</strong> / ${data.data.date.readable}`;
+
+                                    // Tampilkan lokasi
+                                    document.getElementById('lokasiUser').innerHTML =
+                                        `<i class="bi bi-geo-alt-fill"></i> ${namaLokasi}`;
+
+                                    // Render cards jadwal sholat
+                                    renderJadwal(timings);
+                                } else {
+                                    throw new Error('Gagal mengambil data dari API');
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                container.innerHTML = `
+          <div class="col-12">
+            <div class="alert alert-danger text-center">
+              <i class="bi bi-exclamation-triangle"></i> 
+              Gagal memuat jadwal sholat. Silakan coba lagi atau pilih kota secara manual.
+            </div>
+          </div>
+        `;
+                            } finally {
+                                loading.style.display = 'none';
+                            }
+                        }
+
+                        // Fungsi untuk render kartu jadwal sholat
+                        function renderJadwal(timings) {
+                            const container = document.getElementById('jadwalContainer');
+                            const waktuUtama = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+                            // Cari waktu sholat selanjutnya
+                            const waktuSekarang = new Date();
+                            let waktuSelanjutnya = null;
+
+                            waktuUtama.forEach(waktu => {
+                                const [jam, menit] = timings[waktu].split(':').map(Number);
+                                const waktuSholat = new Date();
+                                waktuSholat.setHours(jam, menit, 0);
+
+                                if (waktuSholat > waktuSekarang && !waktuSelanjutnya) {
+                                    waktuSelanjutnya = waktu;
+                                }
+                            });
+
+                            let html = '';
+                            waktuUtama.forEach(waktu => {
+                                const info = namaWaktuSholat[waktu];
+                                const isActive = waktu === waktuSelanjutnya;
+
+                                html += `
+          <div class="col-6 col-md-4 col-lg">
+            <div class="prayer-card ${isActive ? 'active' : ''}">
+              <div class="icon" style="color: ${isActive ? 'white' : info.warna}">
+                <i class="bi ${info.icon}"></i>
+              </div>
+              <h5 class="mb-1">${info.nama}</h5>
+              <div class="time">${timings[waktu]}</div>
+              ${isActive ? '<small class="badge bg-warning text-dark">Waktu Berikutnya</small>' : ''}
+            </div>
+          </div>
+        `;
+                            });
+
+                            container.innerHTML = html;
+                        }
+
+                        // Fungsi deteksi lokasi otomatis
+                        function deteksiLokasi() {
+                            if (!navigator.geolocation) {
+                                alert('Browser Anda tidak mendukung deteksi lokasi. Silakan pilih kota secara manual.');
+                                return;
+                            }
+
+                            document.getElementById('lokasiUser').innerHTML =
+                                '<i class="bi bi-geo-alt-fill"></i> Mendeteksi lokasi...';
+
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    const lat = position.coords.latitude;
+                                    const lng = position.coords.longitude;
+                                    ambilJadwalSholat(lat, lng, 'Lokasi Anda Terdeteksi');
+                                },
+                                (error) => {
+                                    console.error('Geolocation error:', error);
+                                    document.getElementById('lokasiUser').innerHTML =
+                                        '<i class="bi bi-geo-alt-fill"></i> Lokasi tidak terdeteksi. Menampilkan Jakarta.';
+                                    // Fallback ke Jakarta
+                                    ambilJadwalSholat(-6.2088, 106.8456, 'Jakarta (Default)');
+                                },
+                                { timeout: 10000 }
+                            );
+                        }
+
+                        // Event listener untuk selector kota
+                        document.getElementById('kotaSelect').addEventListener('change', function () {
+                            const kota = this.value;
+                            const koordinat = kotaKoordinat[kota];
+                            if (koordinat) {
+                                ambilJadwalSholat(koordinat.lat, koordinat.lng, kota);
+                            }
+                        });
+
+                        // Jalankan saat halaman dimuat
+                        window.addEventListener('DOMContentLoaded', () => {
+                            // Coba deteksi lokasi otomatis, jika gagal tampilkan Jakarta
+                            deteksiLokasi();
+                        });
+                    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<nav aria-label="breadcrumb" class="bg-light py-2">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="/" class="text-decoration-none"><i class="bi bi-house-door"></i> Beranda</a>
+            </li>
+            <% if (typeof breadcrumbItems !=='undefined' && breadcrumbItems) { %>
+                <% breadcrumbItems.forEach((item, index)=> { %>
+                    <% if (index===breadcrumbItems.length - 1) { %>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <%= item.label %>
+                        </li>
+                        <% } else { %>
+                            <li class="breadcrumb-item">
+                                <a href="<%= item.url %>" class="text-decoration-none">
+                                    <%= item.label %>
+                                </a>
+                            </li>
+                            <% } %>
+                                <% }) %>
+                                    <% } %>
+        </ol>
+    </div>
+</nav>

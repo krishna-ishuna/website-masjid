@@ -1,0 +1,100 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm sticky-top">
+    <div class="container">
+        <!-- Logo & Nama Masjid -->
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+            <i class="bi bi-moon-stars-fill me-2 fs-4"></i>
+            <span>Masjid Al-Ikhlas</span>
+        </a>
+
+        <!-- Toggle Button untuk Mobile -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu Navigasi -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                <!-- Beranda -->
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPath === '/' ? 'active fw-bold' : '' %>" href="/">
+                        <i class="bi bi-house-door"></i> Beranda
+                    </a>
+                </li>
+
+                <!-- Jadwal Sholat -->
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPath === '/jadwal' ? 'active fw-bold' : '' %>" href="/jadwal">
+                        <i class="bi bi-clock-history"></i> Jadwal Sholat
+                    </a>
+                </li>
+
+                <!-- Dropdown Pengumuman & Kegiatan -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle <%= ['/pengumuman', '/galeri'].includes(currentPath) ? 'active fw-bold' : '' %>"
+                        href="#" id="navbarDropdownInfo" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-megaphone"></i> Informasi
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownInfo">
+                        <li><a class="dropdown-item" href="/pengumuman"><i
+                                    class="bi bi-megaphone me-2"></i>Pengumuman</a></li>
+                        <li><a class="dropdown-item" href="/galeri"><i class="bi bi-images me-2"></i>Galeri Foto</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Keuangan -->
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPath === '/keuangan' ? 'active fw-bold' : '' %>" href="/keuangan">
+                        <i class="bi bi-wallet2"></i> Keuangan
+                    </a>
+                </li>
+
+                <!-- Kontak & Donasi -->
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPath === '/kontak' ? 'active fw-bold' : '' %>" href="/kontak">
+                        <i class="bi bi-envelope-heart"></i> Kontak
+                    </a>
+                </li>
+
+                <!-- Tombol Donasi (CTA) -->
+                <li class="nav-item ms-lg-2">
+                    <a href="/kontak#donasi" class="btn btn-warning btn-sm fw-bold text-dark shadow-sm">
+                        <i class="bi bi-heart-fill"></i> Donasi
+                    </a>
+                </li>
+
+                <!-- Admin Login (Kecil di pojok) -->
+                <li class="nav-item ms-lg-2">
+                    <a class="nav-link small text-white-50" href="/admin/login" title="Login Admin">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .navbar .nav-link.active {
+        color: #fff !important;
+        border-bottom: 2px solid #ffc107;
+    }
+
+    .navbar .nav-link:hover {
+        color: #ffc107 !important;
+    }
+
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .dropdown-item:hover {
+        background-color: #e9f7ef;
+        color: #198754;
+    }
+</style>

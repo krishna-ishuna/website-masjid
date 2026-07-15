@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Donasi - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">🕌 Panel Admin Masjid</span>
+            <div class="d-flex align-items-center text-white">
+                <span class="me-3">Halo, <%= user.username %></span>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="/admin/donasi" class="btn btn-outline-secondary mb-3">← Kembali</a>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">Detail Pengajuan Donasi</h4>
+            </div>
+            <div class="card-body">
+
+                <!-- Info Donatur -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-muted">Data Donatur</h5>
+                        <p><strong><i class="bi bi-person"></i> Nama:</strong>
+                            <%= donasi.namaDonatur %>
+                        </p>
+                        <p><strong><i class="bi bi-whatsapp"></i> Telepon:</strong>
+                            <a href="https://wa.me/<%= donasi.telepon.replace(/\D/g, '') %>" target="_blank">
+                                <%= donasi.telepon %> <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </p>
+                        <% if (donasi.email) { %>
+                            <p><strong><i class="bi bi-envelope"></i> Email:</strong>
+                                <%= donasi.email %>
+                            </p>
+                            <% } %>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-muted">Data Donasi</h5>
+                        <p><strong><i class="bi bi-cash-stack"></i> Nominal:</strong>
+                            <span class="text-success fs-5 fw-bold">Rp <%= donasi.nominal.toLocaleString('id-ID') %>
+                                    </span>
+                        </p>
+                        <p><strong><i class="bi bi-tag"></i> Kategori:</strong>
+                            <span class="badge bg-info">
+                                <%= donasi.kategori %>
+                            </span>
+                        </p>
+                        <p><strong><i class="bi bi-credit-card"></i> Metode:</strong>
+                            <%= donasi.metode %>
+                        </p>
+                        <p><strong><i class="bi bi-clock"></i> Diajukan:</strong>
+                            <%= new Date(donasi.createdAt).toLocaleString('id-ID') %>
+                        </p>
+                    </div>
+                </div>
+
+                <% if (donasi.keterangan) { %>
+                    <div class="alert alert-light border">
+                        <strong>Keterangan dari donatur:</strong><br>
+                        <%= donasi.keterangan %>
+                    </div>
+                    <% } %>
+
+                        <!-- Status Saat Ini -->
+                        <div class="mb-4">
+                            <h5>Status Saat Ini:</h5>
+                            <% if (donasi.status==='menunggu' ) { %>
+                                <span class="badge bg-warning text-dark fs-6">⏳ Menunggu Verifikasi</span>
+                                <% } else if (donasi.status==='diverifikasi' ) { %>
+                                    <span class="badge bg-success fs-6">✅ Sudah Diverifikasi</span>
+                                    <% if (donasi.verifiedBy) { %>
+                                        <p class="text-muted small mt-2 mb-0">
+                                            Diverifikasi oleh <strong>
+                                                <%= donasi.verifiedBy.username %>
+                                            </strong>
+                                            pada <%= new Date(donasi.tanggalVerifikasi).toLocaleString('id-ID') %>
+                                        </p>
+                                        <% } %>
+                                            <% } else { %>
+                                                <span class="badge bg-danger fs-6">❌ Ditolak</span>
+                                                <% } %>
+                        </div>
+
+                        <% if (donasi.catatanAdmin) { %>
+                            <div class="alert alert-info">
+                                <strong>Catatan Admin:</strong><br>
+                                <%= donasi.catatanAdmin %>
+                            </div>
+                            <% } %>
+
+                                <hr>
+
+                                <!-- Form Verifikasi -->
+                                <% if (donasi.status==='menunggu' ) { %>
+                                    <h5 class="mt-4">Verifikasi Pengajuan:</h5>
+                                    <form action="/admin/donasi/<%= donasi._id %>/verifikasi" method="POST">
+                                        <div class="mb-3">
+                                            <label class="form-label">Catatan untuk donatur (opsional)</label>
+                                            <textarea class="form-control" name="catatanAdmin" rows="3"
+                                                placeholder="Contoh: Donasi sudah diterima, jazakallah khairan."></textarea>
+                                        </div>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <button type="submit" name="status" value="diverifikasi"
+                                                class="btn btn-success btn-lg">
+                                                <i class="bi bi-check-circle"></i> Verifikasi & Catat di Keuangan
+                                            </button>
+                                            <button type="submit" name="status" value="ditolak"
+                                                class="btn btn-danger btn-lg">
+                                                <i class="bi bi-x-circle"></i> Tolak Pengajuan
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <% } %>
+
+                                        <hr>
+
+                                        <form action="/admin/donasi/hapus/<%= donasi._id %>" method="POST"
+                                            onsubmit="return confirm('Yakin hapus pengajuan ini?')">
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Hapus Pengajuan
+                                            </button>
+                                        </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

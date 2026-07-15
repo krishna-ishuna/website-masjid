@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Pesan - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">🕌 Panel Admin Masjid</span>
+            <div class="d-flex align-items-center text-white">
+                <span class="me-3">Halo, <%= user.username %></span>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="/admin/kontak" class="btn btn-outline-secondary mb-3">← Kembali</a>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <%= pesan.subjek %>
+                </h4>
+                <% if (pesan.status==='baru' ) { %>
+                    <span class="badge bg-danger fs-6">BARU</span>
+                    <% } else if (pesan.status==='dibaca' ) { %>
+                        <span class="badge bg-info fs-6">Dibaca</span>
+                        <% } else if (pesan.status==='dibalas' ) { %>
+                            <span class="badge bg-success fs-6">Dibalas</span>
+                            <% } else { %>
+                                <span class="badge bg-secondary fs-6">Arsip</span>
+                                <% } %>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong><i class="bi bi-person"></i> Nama:</strong>
+                            <%= pesan.nama %>
+                        </p>
+                        <% if (pesan.email) { %>
+                            <p><strong><i class="bi bi-envelope"></i> Email:</strong>
+                                <a href="mailto:<%= pesan.email %>">
+                                    <%= pesan.email %>
+                                </a>
+                            </p>
+                            <% } %>
+                    </div>
+                    <div class="col-md-6">
+                        <% if (pesan.telepon) { %>
+                            <p><strong><i class="bi bi-whatsapp"></i> Telepon/WA:</strong>
+                                <a href="https://wa.me/<%= pesan.telepon.replace(/\D/g, '') %>" target="_blank">
+                                    <%= pesan.telepon %> <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+                            </p>
+                            <% } %>
+                                <p><strong><i class="bi bi-clock"></i> Dikirim:</strong>
+                                    <%= new Date(pesan.createdAt).toLocaleString('id-ID') %>
+                                </p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5>Pesan:</h5>
+                <div class="bg-light p-3 rounded" style="white-space: pre-wrap;">
+                    <%= pesan.pesan %>
+                </div>
+
+                <hr>
+
+                <!-- Ubah Status -->
+                <h5 class="mt-4">Ubah Status:</h5>
+                <form action="/admin/kontak/<%= pesan._id %>/status" method="POST" class="d-flex gap-2 flex-wrap">
+                    <button type="submit" name="status" value="dibaca"
+                        class="btn btn-info <%= pesan.status === 'dibaca' ? 'active' : '' %>">
+                        <i class="bi bi-eye"></i> Tandai Dibaca
+                    </button>
+                    <button type="submit" name="status" value="dibalas"
+                        class="btn btn-success <%= pesan.status === 'dibalas' ? 'active' : '' %>">
+                        <i class="bi bi-reply"></i> Tandai Sudah Dibalas
+                    </button>
+                    <button type="submit" name="status" value="diarsipkan"
+                        class="btn btn-secondary <%= pesan.status === 'diarsipkan' ? 'active' : '' %>">
+                        <i class="bi bi-archive"></i> Arsipkan
+                    </button>
+                </form>
+
+                <hr>
+
+                <form action="/admin/kontak/hapus/<%= pesan._id %>" method="POST"
+                    onsubmit="return confirm('Yakin hapus pesan ini?')">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Hapus Pesan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Foto - Masjid Al-Ikhlas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- GLightbox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+    <style>
+        .galeri-hero {
+            background: linear-gradient(135deg, #0d6832 0%, #198754 100%);
+            color: white;
+            padding: 80px 0;
+        }
+
+        .galeri-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            cursor: pointer;
+            aspect-ratio: 1;
+        }
+
+        .galeri-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .galeri-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .galeri-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 20px 15px 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .galeri-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .filter-btn.active {
+            background: #198754 !important;
+            color: white !important;
+            border-color: #198754 !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <% include('../partials/navbar') %>
+
+        <% const breadcrumbItems=[{ label: 'Galeri Foto' }] %>
+            <% include('../partials/breadcrumb') %>
+
+                <!-- Hero -->
+                <section class="galeri-hero text-center">
+                    <div class="container">
+                        <h1 class="display-5 fw-bold mb-3">
+                            <i class="bi bi-images"></i> Galeri Kegiatan Masjid
+                        </h1>
+                        <p class="lead mb-0">Dokumentasi kegiatan dan momen berharga di Masjid Al-Ikhlas</p>
+                    </div>
+                </section>
+
+                <!-- Filter Kategori -->
+                <section class="py-4 bg-light">
+                    <div class="container">
+                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                            <a href="/galeri"
+                                class="btn btn-outline-success filter-btn <%= kategoriAktif === 'semua' ? 'active' : '' %>">
+                                Semua
+                            </a>
+                            <a href="/galeri?kategori=kajian"
+                                class="btn btn-outline-success filter-btn <%= kategoriAktif === 'kajian' ? 'active' : '' %>">
+                                Kajian
+                            </a>
+                            <a href="/galeri?kategori=kegiatan"
+                                class="btn btn-outline-success filter-btn <%= kategoriAktif === 'kegiatan' ? 'active' : '' %>">
+                                Kegiatan
+                            </a>
+                            <a href="/galeri?kategori=pembangunan"
+                                class="btn btn-outline-success filter-btn <%= kategoriAktif === 'pembangunan' ? 'active' : '' %>">
+                                Pembangunan
+                            </a>
+                            <a href="/galeri?kategori=sosial"
+                                class="btn btn-outline-success filter-btn <%= kategoriAktif === 'sosial' ? 'active' : '' %>">
+                                Sosial
+                            </a>
+                            <a href="/galeri?kategori=ramadhan"
+                                class="btn btn-outline-success filter-btn <%= kategoriAktif === 'ramadhan' ? 'active' : '' %>">
+                                Ramadhan
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Grid Galeri -->
+                <section class="py-5">
+                    <div class="container">
+                        <% if (galeri.length===0) { %>
+                            <div class="alert alert-info text-center">
+                                <i class="bi bi-info-circle"></i> Belum ada foto untuk ditampilkan.
+                            </div>
+                            <% } else { %>
+                                <div class="row g-3">
+                                    <% galeri.forEach(g=> { %>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <a href="/uploads/galeri/<%= g.filename %>" class="galeri-item glightbox"
+                                                data-gallery="galeri-masjid"
+                                                data-glightbox="title: <%= g.judul %>; description: <%= g.deskripsi || 'Foto kegiatan masjid' %>; descriptionPosition: bottom">
+                                                <img src="/uploads/galeri/<%= g.filename %>" alt="<%= g.judul %>"
+                                                    loading="lazy">
+                                                <div class="overlay">
+                                                    <h6 class="mb-1">
+                                                        <%= g.judul %>
+                                                    </h6>
+                                                    <small><i class="bi bi-tag"></i>
+                                                        <%= g.kategori %>
+                                                    </small>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                                <% } %>
+                    </div>
+                </section>
+                <!-- Back to Top Button -->
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" id="backToTop"
+                    class="btn btn-success btn-lg rounded-circle shadow-lg"
+                    style="position: fixed; bottom: 30px; right: 30px; display: none; z-index: 1000; width: 50px; height: 50px;">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+
+                <script>
+                    // Tampilkan tombol back to top saat scroll
+                    window.addEventListener('scroll', function () {
+                        const backToTop = document.getElementById('backToTop');
+                        if (window.pageYOffset > 300) {
+                            backToTop.style.display = 'block';
+                        } else {
+                            backToTop.style.display = 'none';
+                        }
+                    });
+                </script>
+                <section class="py-4">
+                    <div class="container">
+                        <a href="/" class="btn btn-outline-success">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+                        </a>
+                    </div>
+                </section>
+
+                <% include('../partials/footer') %>
+
+                    <!-- GLightbox JS -->
+                    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+                    <script>
+                        // Inisialisasi lightbox
+                        const lightbox = GLightbox({
+                            selector: '.glightbox',
+                            touchNavigation: true,
+                            loop: true,
+                            autoplayVideos: true
+                        });
+                    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pengumuman - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">🕌 Panel Admin Masjid</span>
+            <div class="d-flex align-items-center text-white">
+                <span class="me-3">Halo, <%= user.username %></span>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>📢 Daftar Pengumuman</h2>
+            <a href="/admin/pengumuman/tambah" class="btn btn-success">+ Tambah Pengumuman</a>
+        </div>
+
+        <% if (pengumuman.length===0) { %>
+            <div class="alert alert-info">Belum ada pengumuman. <a href="/admin/pengumuman/tambah">Buat yang
+                    pertama!</a></div>
+            <% } else { %>
+                <!-- Ganti bagian <table> dengan ini -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Gambar</th>
+                                <th>Judul</th>
+                                <th>Kategori</th>
+                                <th>Tanggal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% pengumuman.forEach(p=> { %>
+                                <tr>
+                                    <td>
+                                        <% if (p.gambar) { %>
+                                            <img src="/uploads/<%= p.gambar %>" alt="<%= p.judul %>"
+                                                class="img-thumbnail"
+                                                style="width: 80px; height: 60px; object-fit: cover;">
+                                            <% } else { %>
+                                                <div class="bg-light d-flex align-items-center justify-content-center"
+                                                    style="width: 80px; height: 60px; border: 1px dashed #ccc;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                                <% } %>
+                                    </td>
+                                    <td>
+                                        <%= p.judul %>
+                                    </td>
+                                    <td><span class="badge bg-info">
+                                            <%= p.kategori %>
+                                        </span></td>
+                                    <td>
+                                        <%= new Date(p.tanggal).toLocaleDateString('id-ID') %>
+                                    </td>
+                                    <td>
+                                        <a href="/admin/pengumuman/edit/<%= p._id %>"
+                                            class="btn btn-sm btn-warning">Edit</a>
+                                        <form action="/admin/pengumuman/hapus/<%= p._id %>" method="POST"
+                                            style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus?')">
+                                            <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <% } %>
+
+                    <a href="/admin/dashboard" class="btn btn-secondary mt-3">← Kembali ke Dashboard</a>
+    </div>
+
+</body>
+
+</html>

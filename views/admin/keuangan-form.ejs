@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= action %> Keuangan - Admin
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">🕌 Panel Admin Masjid</span>
+            <div class="d-flex align-items-center text-white">
+                <span class="me-3">Halo, <%= user.username %></span>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="mb-4">
+            <%= action %> Data Keuangan
+        </h2>
+
+        <form action="<%= keuangan ? '/admin/keuangan/' + keuangan._id : '/admin/keuangan' %>" method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="tanggal" class="form-label">Tanggal</label>
+                    <input type="date" class="form-control" id="tanggal" name="tanggal"
+                        value="<%= keuangan ? new Date(keuangan.tanggal).toISOString().split('T')[0] : new Date().toISOString().split('T')[0] %>"
+                        required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="jenis" class="form-label">Jenis Transaksi</label>
+                    <select class="form-select" id="jenis" name="jenis" required>
+                        <option value="pemasukan" <%=keuangan && keuangan.jenis==='pemasukan' ? 'selected' : '' %>
+                            >Pemasukan</option>
+                        <option value="pengeluaran" <%=keuangan && keuangan.jenis==='pengeluaran' ? 'selected' : '' %>
+                            >Pengeluaran</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="nominal" class="form-label">Nominal (Rp)</label>
+                <input type="number" class="form-control" id="nominal" name="nominal"
+                    value="<%= keuangan ? keuangan.nominal : '' %>" min="0" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="kategori" class="form-label">Kategori</label>
+                <select class="form-select" id="kategori" name="kategori" required>
+                    <option value="infaq" <%=keuangan && keuangan.kategori==='infaq' ? 'selected' : '' %>>Infaq</option>
+                    <option value="zakat" <%=keuangan && keuangan.kategori==='zakat' ? 'selected' : '' %>>Zakat</option>
+                    <option value="donasi" <%=keuangan && keuangan.kategori==='donasi' ? 'selected' : '' %>>Donasi
+                    </option>
+                    <option value="listrik" <%=keuangan && keuangan.kategori==='listrik' ? 'selected' : '' %>>Listrik
+                    </option>
+                    <option value="honor" <%=keuangan && keuangan.kategori==='honor' ? 'selected' : '' %>>Honor
+                        Marbot/Ustadz</option>
+                    <option value="kebersihan" <%=keuangan && keuangan.kategori==='kebersihan' ? 'selected' : '' %>
+                        >Kebersihan</option>
+                    <option value="pembangunan" <%=keuangan && keuangan.kategori==='pembangunan' ? 'selected' : '' %>
+                        >Pembangunan</option>
+                    <option value="lainnya" <%=keuangan && keuangan.kategori==='lainnya' ? 'selected' : '' %>>Lainnya
+                    </option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="keterangan" class="form-label">Keterangan</label>
+                <textarea class="form-control" id="keterangan" name="keterangan" rows="3"
+                    required><%= keuangan ? keuangan.keterangan : '' %></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">💾 Simpan</button>
+            <a href="/admin/keuangan" class="btn btn-secondary">Batal</a>
+        </form>
+    </div>
+
+</body>
+
+</html>

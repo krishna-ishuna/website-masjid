@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pesan Kontak - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">🕌 Panel Admin Masjid</span>
+            <div class="d-flex align-items-center text-white">
+                <span class="me-3">Halo, <%= user.username %></span>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="bi bi-chat-dots"></i> Pesan Kontak
+                <% if (pesanBaru> 0) { %>
+                    <span class="badge bg-danger">
+                        <%= pesanBaru %> Baru
+                    </span>
+                    <% } %>
+            </h2>
+        </div>
+
+        <!-- Filter -->
+        <div class="mb-4">
+            <div class="btn-group flex-wrap">
+                <a href="/admin/kontak" class="btn btn-outline-primary <%= statusAktif === 'semua' ? 'active' : '' %>">
+                    Semua (<%= pesan.length %>)
+                </a>
+                <a href="/admin/kontak?status=baru"
+                    class="btn btn-outline-danger <%= statusAktif === 'baru' ? 'active' : '' %>">
+                    Baru
+                </a>
+                <a href="/admin/kontak?status=dibaca"
+                    class="btn btn-outline-info <%= statusAktif === 'dibaca' ? 'active' : '' %>">
+                    Dibaca
+                </a>
+                <a href="/admin/kontak?status=dibalas"
+                    class="btn btn-outline-success <%= statusAktif === 'dibalas' ? 'active' : '' %>">
+                    Dibalas
+                </a>
+                <a href="/admin/kontak?status=diarsipkan"
+                    class="btn btn-outline-secondary <%= statusAktif === 'diarsipkan' ? 'active' : '' %>">
+                    Diarsipkan
+                </a>
+            </div>
+        </div>
+
+        <% if (pesan.length===0) { %>
+            <div class="alert alert-info text-center">Tidak ada pesan.</div>
+            <% } else { %>
+                <div class="list-group">
+                    <% pesan.forEach(p=> { %>
+                        <a href="/admin/kontak/<%= p._id %>" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <% if (p.status==='baru' ) { %>
+                                            <span class="badge bg-danger">BARU</span>
+                                            <% } else if (p.status==='dibaca' ) { %>
+                                                <span class="badge bg-info">Dibaca</span>
+                                                <% } else if (p.status==='dibalas' ) { %>
+                                                    <span class="badge bg-success">Dibalas</span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-secondary">Arsip</span>
+                                                        <% } %>
+                                                            <h6 class="mb-0">
+                                                                <%= p.subjek %>
+                                                            </h6>
+                                    </div>
+                                    <p class="mb-1 text-muted small">
+                                        <strong>
+                                            <%= p.nama %>
+                                        </strong>
+                                        <% if (p.email) { %> &lt;<%= p.email %>&gt; <% } %>
+                                                    <% if (p.telepon) { %> | 📱 <%= p.telepon %>
+                                                            <% } %>
+                                    </p>
+                                    <p class="mb-0 small">
+                                        <%= p.pesan.substring(0, 120) %>...
+                                    </p>
+                                </div>
+                                <small class="text-muted text-nowrap ms-3">
+                                    <%= new Date(p.createdAt).toLocaleDateString('id-ID', { day: 'numeric' ,
+                                        month: 'short' , hour: '2-digit' , minute: '2-digit' }) %>
+                                </small>
+                            </div>
+                        </a>
+                        <% }) %>
+                </div>
+                <% } %>
+
+                    <a href="/admin/dashboard" class="btn btn-secondary mt-4">← Kembali ke Dashboard</a>
+    </div>
+
+</body>
+
+</html>
